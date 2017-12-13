@@ -3,9 +3,45 @@
 
 #sp1 
 
-sp1abund<-function(a,b,c,d,e) {
-   output<- (20*a+b/c-d)^log(e)}
+sp1abund<-function(F1.value,F2.value,F3.value,F4.value,F5.value) {
+   output<- (20*a+b/c-d)^log(e)
+   return(output)}
+   
+sp2abund<-function(F1.value,F2.value,F3.value,F4.value,F5.value) {
+   output<- (a/b*c/d*e)
+   return(output)}
+
+spvec<-c(sp1abund, sp2abund)
+
+spp1<-NULL
+spplist<-matrix(,nrow=30,ncol=2)
+#for(row in 1:nrow(Factors)) {
+   a=Factors[row, "F1.value"]
+   b=Factors[row, "F2.value"]
+   c=Factors[row, "F3.value"]
+   d=Factors[row, "F4.value"]
+   e=Factors[row, "F5.value"]
+   abund<-sp1abund(row)
+   spp1[[row]]<-abund
+   }
+#  
+
+for(row in 1:nrow(Factors)) {
+   a=Factors[row, "F1.value"]
+   b=Factors[row, "F2.value"]
+   c=Factors[row, "F3.value"]
+   d=Factors[row, "F4.value"]
+   e=Factors[row, "F5.value"]
    
    
-  
-   
+   for(i in spvec)  {
+      spplist[row, i]=i(row)
+      for(g in 1:length(spvec))  {
+         
+         spplist[,g]<-abund}
+      }
+   }
+ 
+ spplist<-matrix(
+ 
+ ddply(Factors, 
