@@ -1,0 +1,11 @@
+#species
+
+
+#sp1 
+
+sp1abund<-function(a,b,c,d,e) {
+   output<- (20*a+b/c-d)^log(e)}
+   
+   
+  
+   
