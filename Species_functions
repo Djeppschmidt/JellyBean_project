@@ -1,3 +1,31 @@
+#architecture
+#make functions/list
+f1<-function(a,b) {output<-a-b
+   		return(output)}
+f2<-function(a,b) {output<-a+b
+   		return(output)}
+   
+fun<-list(f1,f2)		
+ #make site data  
+   a<-c(1,2,3)
+   b<-c(3,2,1)
+   df2<-matrix(.,a,b)
+   df<-data.frame(a,b)
+
+#Calculate species abundance
+saa<-matrix(,nrow=3, ncol=2)
+saa
+
+for(i in 1:length(fun)) {
+  	for(row in 1:nrow(df)){
+   saa[row,i]<-do.call(fun[[i]], list(df[row,1],df[row,2])) 
+      }
+	}
+
+
+
+
+
 #species
 
 
@@ -10,6 +38,19 @@ sp1abund<-function(F1.value,F2.value,F3.value,F4.value,F5.value) {
 sp2abund<-function(F1.value,F2.value,F3.value,F4.value,F5.value) {
    output<- (a/b*c/d*e)
    return(output)}
+
+
+sp1abunda<-function(a,b,c,d,e) {
+   output<- (20*a+b/c-d)^log(e)
+   return(output)}
+sp2abundb<-function(a,b,c,d,e) {
+   output<- (a/b*c/d*e)
+   return(output)}
+spvec2<-c(sp1abunda,sp2abundb)
+
+for(i in 1:length(Factors) {mapply(
+
+
 
 spvec<-c(sp1abund, sp2abund)
 
@@ -33,7 +74,14 @@ for(row in 1:nrow(Factors)) {
    d=Factors[row, "F4.value"]
    e=Factors[row, "F5.value"]
    
+   mmm[row]<-mapply(spvec, row)
+   print(mmm)}
    
+  OTUtable<-matrix[spvec, 
+   
+   
+   
+   matrix(lapply(spvec, do.call, row), row, ncol=2, nrow=30)}
    for(i in spvec)  {
       spplist[row, i]=i(row)
       for(g in 1:length(spvec))  {
@@ -42,6 +90,20 @@ for(row in 1:nrow(Factors)) {
       }
    }
  
- spplist<-matrix(
+ 
+ for(i in spvec)  {
+      i(row)
+      for(g in 1:length(spvec))  {
+         
+         spplist[,g]<-abund}
+ 
+ lapply(function.list, do.call, list())
+ 
+ spplist<-matrix(for(i in length(spvec))  {print(i)}, for(i in spvec)  {spplist[i]=i(row)}, ncol=2, nrow=30)
+      for(g in 1:length(spvec))  {
+         
+         spplist[,g]<-abund}
+      }
+   }
  
  ddply(Factors, 
