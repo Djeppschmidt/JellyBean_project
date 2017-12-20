@@ -52,8 +52,8 @@ fun<-c(...)
 #### output response table###
 
 for(i in 1:length(fun)) {
-  	for(row in 1:nrow(df)){
-   rt[row,i]<-do.call(fun[[i]], list(df[row,1],df[row,2])) 
+  	for(row in 1:nrow(Factors)){
+   rt[row,i]<-do.call(fun[[i]], list(Factors[row,1],Factors[row,2]...)) 
       }
 }
 
