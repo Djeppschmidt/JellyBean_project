@@ -53,7 +53,7 @@ fun<-c(...)
 
 for(i in 1:length(fun)) {
   	for(row in 1:nrow(Factors)){
-   rt[row,i]<-do.call(fun[[i]], list(Factors[row,1],Factors[row,2]...)) 
+   rt[row,i]<-do.call(fun[[i]], list(Factors[row,1],Factors[row,2],Factors[row,3],Factors[row,4],Factors[row,5])) 
       }
 }
 
