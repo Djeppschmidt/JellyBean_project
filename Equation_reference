@@ -45,12 +45,12 @@ spp32<-function(a,b,c,d,e) {rnorm(1, 1, 5)+(0*(a+b+c+d+e))}
 
 
 #linear functions
-spp1<-function(a,b,c,d,e) {}
-spp2<-function(a,b,c,d,e) {}
-spp3<-function(a,b,c,d,e) {}
-spp4<-function(a,b,c,d,e) {}
-spp5<-function(a,b,c,d,e) {}
-spp5<-function(a,b,c,d,e) {}
+spp33<-function(a,b,c,d,e) {10*a+0*b*c*d*e}
+spp34<-function(a,b,c,d,e) {10*b+0*a*c*d*e}
+spp35<-function(a,b,c,d,e) {10*c+0*b*a*d*e}
+spp36<-function(a,b,c,d,e) {}
+spp37<-function(a,b,c,d,e) {}
+spp38<-function(a,b,c,d,e) {}
 spp6<-function(a,b,c,d,e) {}
 spp7<-function(a,b,c,d,e) {}
 spp8<-function(a,b,c,d,e) {}
