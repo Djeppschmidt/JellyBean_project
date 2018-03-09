@@ -263,5 +263,14 @@ rareplaced<-otu_table(rareplaced, taxa_are_rows = FALSE)
 replaced.NormdistCommPS<-phyloseq(rareplaced, Sa)
 replaced.NormdistCommPS
 
+total_abund<-sample_sums(NormdistCommPS)
+sample_data(replaced.NormdistCommPS)$total_abund<-total_abund
+sample_data(rare.NormdistCommPS)$total_abund<-total_abund
+
+
 saveRDS(rare.NormdistCommPS, "~/Documents/GitHub/JellyBean_Project/rarefied_com.rds")
 saveRDS(replaced.NormdistCommPS, "~/Documents/GitHub/JellyBean_Project/rareplaced_com.rds")
+
+
+?rnorm
+
