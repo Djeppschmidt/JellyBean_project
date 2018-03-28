@@ -29,7 +29,7 @@ dge<-DGEList(counts=otutab)#make OTU table into DGEList object
 #do a scale normalization
 dge<-calcNormFactors(dge) #calculate the normalization factors via EdgeR
 
-categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5)) #make more metadata
+categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5), rep(6,5)) #make more metadata
 sData$cat<-categories #add treatment effects to metadata?
 attach(sData)
 
