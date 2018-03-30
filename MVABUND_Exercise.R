@@ -19,29 +19,46 @@ adjustFactor<-(sum(total_abund)/length(total_abund))/total_abund
 #data2<-round(as.matrix(otu_table(NormdistCommPS))*adjustFactor)
 
 #isolate otu_table and apply the transformation(use your own R objects- they will be different than this example)
-data2<-as.matrix(otu_table(data))*adjustFactor
-data2<-round(data2)
+dat<-as.matrix(otu_table(data))*adjustFactor
+dat<-round(dat)
 
 #replace otu table in phyloseq object
-otu_table(data2)<-otu_table(data2, taxa_are_rows = FALSE)
+data2<-data
+otu_table(data2)<-otu_table(dat, taxa_are_rows = FALSE)
 
 #Check your OTU table output . Does it look reasonable? are there decimals?(answer should be no!)
 
+#add categories to the sampld data
+categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5))
+sample_data(data2)$categories<-categories
 
 #save your modified phyloseq object using saveRDS(); we will use this as a starting point for all analyses
 
 #now we are ready to start MVABUND!!
 #tutorial: http://environmentalcomputing.net/introduction-to-mvabund/
 
+########################################
+
+### Run Multiple times!
+
+#raw dataset without normalization
+#dataset with QPCR adjustment
+#rarefaction without adjustment
+#rarefaction+QPCR adjustment
+
+### what is the difference? ###
+
+#######################################
+
 library(mvabund)
 
 
-#check the abundance distri ution of species...
+#check the abundance distribution of species...
 boxplot(otu_table(data2), horizontal = T, main="Abundance")
 #check the mean variance relationship...
 meanvar.plot(otu_table(data2))
 
-#build a statistical model for your
+#build a statistical model for your (e.g. explore the model distributions)
 ?manyglm
 manyglm
 mod1<-manyglm(otu_table(data2)~sample_data(data2)$F1, family="poisson")
