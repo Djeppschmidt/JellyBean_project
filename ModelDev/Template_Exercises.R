@@ -92,7 +92,16 @@ res3 = res3[order(res3$padj, na.last=NA), ]
 alpha = 0.01
 sigtabAdj = res3[(res3$padj < alpha), ]
 sigtabAdj
+####
 
+#IF YOU WANT TO USE STABILIZED DATA FOR OTHER APPROACHES:  ###
+#will maybe test this approach later in the semester#
+
+altmethod
+ddsRaw = phyloseq_to_deseq2(rawdata, ~categories)
+ddsEST = estimateSizeFactors(ddsRaw)
+diaEST = estimateDispersions(ddsEST)
+diagvst = getVarianceStabilizedData(diaEST)#generate var sabilized data
 
 #### Limma Voom ####
 
