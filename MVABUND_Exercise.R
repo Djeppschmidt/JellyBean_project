@@ -37,18 +37,7 @@ sample_data(data2)$categories<-categories
 #now we are ready to start MVABUND!!
 #tutorial: http://environmentalcomputing.net/introduction-to-mvabund/
 
-########################################
-
-### Run Multiple times!
-
-#raw dataset without normalization
-#dataset with QPCR adjustment
-#rarefaction without adjustment
-#rarefaction+QPCR adjustment
-
-### what is the difference? ###
-
-#######################################
+#Example workflow:
 
 library(mvabund)
 
@@ -79,3 +68,17 @@ anova(mod3)
 
 #run test on each species individually
 anova(mod3, p.uni="adjusted")
+
+
+########################################
+
+### Run Multiple times!
+
+#raw dataset without normalization
+#dataset with QPCR adjustment
+#rarefaction without adjustment
+#rarefaction+QPCR adjustment
+
+### what is the difference? ###
+
+#######################################
