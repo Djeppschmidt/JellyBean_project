@@ -103,7 +103,58 @@ ddsEST = estimateSizeFactors(ddsRaw)
 diaEST = estimateDispersions(ddsEST)
 diagvst = getVarianceStabilizedData(diaEST)#generate var sabilized data
 
+
+otu_table(data) <- otu_table(diagvst, taxa_are_rows = TRUE)#replace data with variance stabilized
+
+
 #### Limma Voom ####
 
 
+#raw
+rawOTU<-as.matrix(t(otu_table(rawdata)))
+sData<-sample_data(rawdata)
+attach(sData)
+rawdge<-DGEList(counts=rawOTU)
+rawdge<-calcNormFactors(rawdge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
 
+design<-model.matrix(~categories)
+rawV <- voom(rawdge, design, plot=TRUE)
+rawFit<-lmFit(rawV, design)
+rawContr<-makeContrasts(categories , levels=colnames(coef(rawFit)))
+rawTmp<-contrasts.fit(rawFit, rawContr)
+rawTmp<-eBayes(rawTmp)
+rawTmp2<-topTable(rawTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
+rawTmp2
+
+#rare
+rareOTU<-as.matrix(t(otu_table(adj.raredat)))
+#sData<-sample_data(rawdata)
+#attach(sData)
+raredge<-DGEList(counts=rareOTU)
+raredge<-calcNormFactors(raredge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
+
+#design<-model.matrix(~categories)
+rareV <- voom(raredge, design, plot=TRUE)
+rareFit<-lmFit(rareV, design)
+rareContr<-makeContrasts(categories , levels=colnames(coef(rareFit)))
+rareTmp<-contrasts.fit(rareFit, rareContr)
+rareTmp<-eBayes(rareTmp)
+rareTmp2<-topTable(rareTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
+rareTmp2
+
+
+#adjusted
+adjOTU<-as.matrix(t(otu_table(adjdata)))
+#sData<-sample_data(rawdata)
+#attach(sData)
+adjdge<-DGEList(counts=adjOTU)
+adjdge<-calcNormFactors(adjdge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
+
+#design<-model.matrix(~categories)
+adjV <- voom(adjdge, design, plot=TRUE)
+adjFit<-lmFit(adjV, design)
+adjContr<-makeContrasts(categories , levels=colnames(coef(adjFit)))
+adjTmp<-contrasts.fit(adjFit, adjContr)
+adjTmp<-eBayes(adjTmp)
+adjTmp2<-topTable(adjTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
+adjTmp2
