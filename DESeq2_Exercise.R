@@ -62,3 +62,5 @@ diagdds = estimateSizeFactors(diagdds)
 diagdds = estimateDispersions(diagdds)
 diagvst = getVarianceStabilizedData(diagdds)
 dim(diagvst)
+
+#use variance stabilized data to input into limma-Voom and MVABUND
