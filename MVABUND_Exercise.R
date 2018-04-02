@@ -50,17 +50,17 @@ meanvar.plot(otu_table(data2))
 #build a statistical model for your (e.g. explore the model distributions)
 ?manyglm
 manyglm
-mod1<-manyglm(otu_table(data2)~sample_data(data2)$F1, family="poisson")
-mod2<-manyglm(otu_table(data2)~sample_data(data2)$F1+sample_data(data2)$F2+sample_data(data2)$F3+sample_data(data2)$F4+sample_data(data2)$F5, family="poisson")
+mod1<-manyglm(otu_table(data2)~sample_data(data2)$categories, family="poisson")
+mod2<-manyglm(otu_table(data2)~sample_data(data2)$categories+sample_data(data2)$F1+sample_data(data2)$F2+sample_data(data2)$F3+sample_data(data2)$F4+sample_data(data2)$F5, family="poisson") #treat env. data as covariates in the model
 
 #examine residual plot
 plot(mod1)
 plot(mod2)
 
 #try another distribution
-mod3<-manyglm(otu_table(data2)~sample_data(data2)$F1, family="negative_binomial")
+mod3<-manyglm(otu_table(data2)~sample_data(data2)$categories, family="negative_binomial")
 plot(mod3)
-mod4<-manyglm(otu_table(data2)~sample_data(data2)$F1+sample_data(data2)$F2+sample_data(data2)$F3+sample_data(data2)$F4+sample_data(data2)$F5, family="negative_binomial")
+mod4<-manyglm(otu_table(data2)~sample_data(data2)$categories+sample_data(data2)$F1+sample_data(data2)$F2+sample_data(data2)$F3+sample_data(data2)$F4+sample_data(data2)$F5, family="negative_binomial") #treat env. data as covariates in the model
 plot(mod4)
 
 #run statistical test
