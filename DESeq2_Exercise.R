@@ -29,10 +29,10 @@ res = results(diagdds)
 res = res[order(res$padj, na.last=NA), ]
 alpha = 0.01
 sigtab = res[(res$padj < alpha), ]
-sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(data)[rownames(sigtab), ], "matrix"))# we have no tax table!!
+# sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(data)[rownames(sigtab), ], "matrix"))# we have no tax table!!
 head(sigtab)
 
-write.csv(sigtab, "/path/to/output.csv")
+write.csv(sigtab, "/path/to/output.csv")#or however you want to save it...
 
 posigtab = sigtab[sigtab[, "log2FoldChange"] > 0, ]
 posigtab = posigtab[, c("baseMean", "log2FoldChange", "lfcSE", "padj", "Phylum", "Class", "Family", "Genus")]
