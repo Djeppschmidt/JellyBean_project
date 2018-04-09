@@ -127,7 +127,7 @@ rawTmp<-contrasts.fit(rawFit, rawContr)
 rawTmp<-eBayes(rawTmp)
 rawTmp2<-topTable(rawTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
 rawTmp2
-
+total_abund
 #rare
 rareOTU<-as.matrix(t(otu_table(adj.raredat)))
 #sData<-sample_data(rawdata)
