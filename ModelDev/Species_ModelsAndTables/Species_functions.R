@@ -74,7 +74,6 @@ spp10<-function(a,b,c,d,e) {abun<-(0.001*(a-13)^3+3)*(10*b)*(-0.001*(e-7)^2+50)+
   abun} #calibrated
 
   ### random responses
-
 spp11<-function(a,b,c,d,e) {abun<-rnorm(1, 50000, 50)-10+(0*(a+b+c+d+e))
   abun} #generate 1 number with mean=50, stdev=50
 spp12<-function(a,b,c,d,e) {abun<-rnorm(1, 40, 40)-10+(0*(a+b+c+d+e))
@@ -119,7 +118,7 @@ spp30<-function(a,b,c,d,e) {abun<-rnorm(1, 1, 100)-10+(0*(a+b+c+d+e))
 spp31<-function(a,b,c,d,e) {abun<-rnorm(1, 1, 100)-10+(0*(a+b+c+d+e))
   abun}
 spp32<-function(a,b,c,d,e) {abun<-rnorm(1, 1, 5)-10+(0*(a+b+c+d+e))
-    abun}
+  abun}
 #linear responses (small)
 spp33<-function(a,b,c,d,e) {abun<-10*a+0*b*c*d*e
   abun}

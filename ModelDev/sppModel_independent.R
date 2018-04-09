@@ -4,7 +4,7 @@
 #define boundary ranges; the functions must produce at least some positive numbers across the range of input values
 
 # initial model
-#response functions
+# complex nonlinear response functions
 spp1<-function(a,b,c,d,e) {(0.001(a-50)^3+3)+(10*b)+(-0.1(c-50)^2+50)+d+e}
 spp2<-function(a,b,c,d,e) {(0.001(a-50)^3+3)*(10*b)+(-0.1(c-50)^2+50)+d+e}
 spp3<-function(a,b,c,d,e) {((1/e)*(a-50)^3+3)+(10*b)+(-0.1(c-50)^2+50)+d}
