@@ -11,11 +11,11 @@ spp9<-function(a,b,c,d,e) {}
 spp10<-function(a,b,c,d,e) {}
 
 #interacting effects
-
-spp11<-function(a,b,c,d,e) {log(spp1(a,b,c,d,e))} 
-spp12<-function(a,b,c,d,e) {}
-spp13<-function(a,b,c,d,e) {}
-spp14<-function(a,b,c,d,e) {}
+### fix species numbers ###
+spp11<-function(a,b,c,d,e) {log(spp1(a,b,c,d,e))}
+spp12<-function(a,b,c,d,e) {if(spp112<20) {spp1(a,b,c,d,e)} else{spp1(a,b,c,d,e)-spp2(a,b,c,d,e)}}#competition
+spp13<-function(a,b,c,d,e) {if(spp112<20) {spp1(a,b,c,d,e)} else{spp2(a,b,c,d,e)-spp1(a,b,c,d,e)}}#competition
+spp14<-function(a,b,c,d,e) {if() {} else{}}
 spp15<-function(a,b,c,d,e) {}
 spp16<-function(a,b,c,d,e) {}
 spp17<-function(a,b,c,d,e) {}

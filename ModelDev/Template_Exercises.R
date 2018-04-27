@@ -1,12 +1,16 @@
+library(phyloseq)
+
 rawdata<-readRDS("~/Documents/GitHub/JellyBean_project/rarefied_com.rds")
 
 sample_data(rawdata)$categories<-categories
+
+total_abund<-sample_data(rawdata)$total_abund
 
 adjustFactor<-(sum(total_abund)/length(total_abund))/total_abund
 
 adjustFactor
 
-
+a2<-adjustFactor*15000
 #adjusted data
 
 
@@ -15,29 +19,72 @@ rareData<-rarefy_even_depth(rawdata, sample.size=min(sample_sums(rawdata)), repl
 adjData1<-as.matrix(otu_table(rawdata))*adjustFactor
 
 adjdata<-rawdata
-otu_table(adjdata)<-adjData1
+otu_table(adjdata)<-round(adjData1)
+
+# rarefaction to uneven depth
+rrarefy2<-
+  function (x, sample, replace)   {
+    if (!identical(all.equal(x, round(x)), TRUE))
+      stop("function is meaningful only for integers (counts)")
+    x <- as.matrix(x)
+    if (ncol(x) == 1)
+      x <- t(x)
+    if (length(sample) > 1 && length(sample) != nrow(x))
+      stop(gettextf("length of 'sample' and number of rows of 'x' do not match"))
+    sample <- rep(sample, length = nrow(x))
+    colnames(x) <- colnames(x, do.NULL = FALSE)
+    nm <- colnames(x)
+    if (any(rowSums(x) < sample))
+      warning("Some row sums < 'sample' and are not rarefied")
+    for (i in 1:nrow(x)) {
+      if (sum(x[i, ]) <= sample[i])
+        next
+      row <- sample(rep(nm, times = x[i, ]), sample[i], replace)
+      row <- table(row)
+      ind <- names(row)
+      x[i, ] <- 0
+      x[i, ind] <- row
+    }
+    x
+    }
+
+r2dat<-rrarefy2(otu_table(rawdata), a2, replace = FALSE)
+r2data<-rawdata
+head(r2data)
+
+otu_table(r2data)<-otu_table(r2dat, taxa_are_rows=FALSE)
+sample_sums(r2data)
+
 
 adj.raredat1<-as.matrix(otu_table(adjdata))*adjustFactor
 adj.raredat1<-round(adj.raredat1)
 adj.raredat<-rareData
 otu_table(adj.raredat)<-adj.raredat1
 
+####
+### Test MVABUND ####
+
+
 library(mvabund)
 
 key<-cbind(colMeans(as.data.frame(as.matrix(otu_table(refcom)[1:5]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[6:10]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[11:15]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[16:20]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[21:25]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[26:30]))))
+categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5))
 
+head(otu_table(r2data))
 mod.rawmvab<-manyglm(otu_table(rawdata)~categories, family="negative_binomial")
 mod.raremvab<-manyglm(otu_table(adj.raredat)~categories, family="negative_binomial")
 mod.adjmvab<-manyglm(otu_table(adjdata)~categories, family="negative_binomial")
+mod.rare2mvab<-manyglm(otu_table(r2data)~categories, family="negative_binomial")
 
 anova.adjrare<-anova(mod.adjmvab, p.uni="adjusted")
 anova.rarabund<-anova(mod.raremvab, p.uni="adjusted")
 anova.rawabund<-anova(mod.rawmvab, p.uni="adjusted")
+anova.rare2mvab<-anova(mod.rare2mvab, p.uni="adjusted")
 
 anova.adjrare
 anova.rarabund
 anova.rawabund
-
+anova.rare2mvab
 
 #### DESeq2 ###
 
@@ -107,6 +154,22 @@ diagvst = getVarianceStabilizedData(diaEST)#generate var sabilized data
 
 
 otu_table(data) <- otu_table(diagvst, taxa_are_rows = TRUE)#replace data with variance stabilized
+
+#NEW Rarefaction
+sample_data(r2data)$categories<-factor(categories)
+ddsRare2 = phyloseq_to_deseq2(r2data, ~categories)
+
+Rare2geoMeans = apply(counts(ddsRare2), 1, gm_mean)
+
+ddsRare2 = estimateSizeFactors(ddsRare2, geoMeans = Rare2geoMeans)
+ddsRare2 = DESeq(ddsRare2, fitType="local")
+
+res3 = results(ddsRare2)
+res3 = res3[order(res3$padj, na.last=NA), ]
+alpha = 0.01
+alpha2 = 0.05
+sigtabRare2 = res3[(res3$padj < alpha2), ]
+sigtabRare2
 
 
 #### Limma Voom ####
