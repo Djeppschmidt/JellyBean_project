@@ -1,7 +1,7 @@
 library(phyloseq)
 
 rawdata<-readRDS("~/Documents/GitHub/JellyBean_project/rarefied_com.rds")
-
+categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5))
 sample_data(rawdata)$categories<-categories
 
 total_abund<-sample_data(rawdata)$total_abund
@@ -56,34 +56,45 @@ otu_table(r2data)<-otu_table(r2dat, taxa_are_rows=FALSE)
 sample_sums(r2data)
 
 
-adj.raredat1<-as.matrix(otu_table(adjdata))*adjustFactor
+adj.raredat1<-as.matrix(otu_table(rareData))*adjustFactor
 adj.raredat1<-round(adj.raredat1)
 adj.raredat<-rareData
 otu_table(adj.raredat)<-adj.raredat1
 
-####
-### Test MVABUND ####
-
-
-library(mvabund)
+###
+### 
+### KEY!!  ######
+###
+###
 
 key<-cbind(colMeans(as.data.frame(as.matrix(otu_table(refcom)[1:5]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[6:10]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[11:15]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[16:20]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[21:25]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[26:30]))))
-categories<-c(rep(1,5), rep(2,5), rep(3,5), rep(4,5), rep(5,5), rep(6,5))
 
+###
+### 
+### KEY!!  ######
+###
+###
+
+###
+###
+### Test MVABUND ####
+###
+###
+library(mvabund)
 head(otu_table(r2data))
 mod.rawmvab<-manyglm(otu_table(rawdata)~categories, family="negative_binomial")
-mod.raremvab<-manyglm(otu_table(adj.raredat)~categories, family="negative_binomial")
-mod.adjmvab<-manyglm(otu_table(adjdata)~categories, family="negative_binomial")
+mod.adjrare<-manyglm(otu_table(adj.raredat)~categories, family="negative_binomial")
+mod.rare<-manyglm(otu_table(rareData)~categories, family="negative_binomial")
 mod.rare2mvab<-manyglm(otu_table(r2data)~categories, family="negative_binomial")
 
-anova.adjrare<-anova(mod.adjmvab, p.uni="adjusted")
-anova.rarabund<-anova(mod.raremvab, p.uni="adjusted")
-anova.rawabund<-anova(mod.rawmvab, p.uni="adjusted")
+anova.adjrare<-anova(mod.adjrare, p.uni="adjusted")
+anova.rawmvab<-anova(mod.rawmvab, p.uni="adjusted")
+anova.rare<-anova(mod.rare, p.uni="adjusted")
 anova.rare2mvab<-anova(mod.rare2mvab, p.uni="adjusted")
 
 anova.adjrare
-anova.rarabund
-anova.rawabund
+anova.rare
+anova.rawmvab
 anova.rare2mvab
 
 #### DESeq2 ###
@@ -104,16 +115,15 @@ ddsRaw = DESeq(ddsRaw, fitType="local")
 
 res = results(ddsRaw)
 res = res[order(res$padj, na.last=NA), ]
-alpha = 0.01
+alpha = 0.05
 sigtab = res[(res$padj < alpha), ]
+outraw<-data.frame(rownames(res), res$padj)
 
 #sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(data)[rownames(sigtab), ], "matrix"))# we have no tax table!!
 head(sigtab)
 
 #rarefied
-
-sample_data(adj.raredat)$categories<-categories
-ddsRare = phyloseq_to_deseq2(adj.raredat, ~categories)
+ddsRare = phyloseq_to_deseq2(rareData, ~categories)
 
 RaregeoMeans = apply(counts(ddsRare), 1, gm_mean)
 
@@ -122,14 +132,14 @@ ddsRare = DESeq(ddsRare, fitType="local")
 
 res2 = results(ddsRare)
 res2 = res2[order(res2$padj, na.last=NA), ]
-alpha = 0.01
+alpha = 0.05
 sigtabRare = res2[(res2$padj < alpha), ]
 sigtabRare
+outraw<-data.frame(rownames(res2), res2$padj)
 
 #adjusted
 
-sample_data(adjdata)$categories<-categories
-ddsadj = phyloseq_to_deseq2(adjdata, ~categories)
+ddsadj = phyloseq_to_deseq2(adj.raredat, ~categories)
 
 AdjgeoMeans = apply(counts(ddsadj), 1, gm_mean)
 
@@ -138,7 +148,7 @@ ddsadj = DESeq(ddsadj, fitType="local")
 
 res3 = results(ddsadj)
 res3 = res3[order(res3$padj, na.last=NA), ]
-alpha = 0.01
+alpha = 0.05
 sigtabAdj = res3[(res3$padj < alpha), ]
 sigtabAdj
 ####
@@ -156,7 +166,7 @@ diagvst = getVarianceStabilizedData(diaEST)#generate var sabilized data
 otu_table(data) <- otu_table(diagvst, taxa_are_rows = TRUE)#replace data with variance stabilized
 
 #NEW Rarefaction
-sample_data(r2data)$categories<-factor(categories)
+
 ddsRare2 = phyloseq_to_deseq2(r2data, ~categories)
 
 Rare2geoMeans = apply(counts(ddsRare2), 1, gm_mean)
@@ -164,17 +174,19 @@ Rare2geoMeans = apply(counts(ddsRare2), 1, gm_mean)
 ddsRare2 = estimateSizeFactors(ddsRare2, geoMeans = Rare2geoMeans)
 ddsRare2 = DESeq(ddsRare2, fitType="local")
 
-res3 = results(ddsRare2)
-res3 = res3[order(res3$padj, na.last=NA), ]
+res4 = results(ddsRare2)
+res4 = res4[order(res4$padj, na.last=NA), ]
 alpha = 0.01
 alpha2 = 0.05
-sigtabRare2 = res3[(res3$padj < alpha2), ]
+sigtabRare2 = res4[(res4$padj < alpha2), ]
 sigtabRare2
 
 
 #### Limma Voom ####
+biocLite("limma")
 
-
+library(limma)
+library(edgeR)
 #raw
 rawOTU<-as.matrix(t(otu_table(rawdata)))
 sData<-sample_data(rawdata)
@@ -191,10 +203,12 @@ rawTmp<-eBayes(rawTmp)
 rawTmp2<-topTable(rawTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
 rawTmp2
 total_abund
+
+
 #rare
-rareOTU<-as.matrix(t(otu_table(adj.raredat)))
-#sData<-sample_data(rawdata)
-#attach(sData)
+rareOTU<-as.matrix(t(otu_table(rareData)))
+sData<-sample_data(rareData)
+attach(sData)
 raredge<-DGEList(counts=rareOTU)
 raredge<-calcNormFactors(raredge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
 
@@ -209,7 +223,7 @@ rareTmp2
 
 
 #adjusted
-adjOTU<-as.matrix(t(otu_table(adjdata)))
+adjOTU<-as.matrix(t(otu_table(adj.raredat)))
 #sData<-sample_data(rawdata)
 #attach(sData)
 adjdge<-DGEList(counts=adjOTU)
@@ -223,3 +237,19 @@ adjTmp<-contrasts.fit(adjFit, adjContr)
 adjTmp<-eBayes(adjTmp)
 adjTmp2<-topTable(adjTmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
 adjTmp2
+
+#rare2
+rare2OTU<-as.matrix(t(otu_table(r2data)))
+#sData<-sample_data(rawdata)
+#attach(sData)
+rare2dge<-DGEList(counts=rare2OTU)
+rare2dge<-calcNormFactors(rare2dge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
+
+#design<-model.matrix(~categories)
+rare2V <- voom(rare2dge, design, plot=TRUE)
+rare2Fit<-lmFit(rare2V, design)
+rare2Contr<-makeContrasts(categories , levels=colnames(coef(rareFit)))
+rare2Tmp<-contrasts.fit(rare2Fit, rareContr)
+rare2Tmp<-eBayes(rare2Tmp)
+rare2Tmp2<-topTable(rare2Tmp, coef=1, sort.by="P", n="INF")#add column for bayesian support
+rare2Tmp2
