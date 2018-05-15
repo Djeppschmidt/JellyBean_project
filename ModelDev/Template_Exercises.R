@@ -6,7 +6,9 @@ sample_data(rawdata)$categories<-categories
 
 total_abund<-sample_data(rawdata)$total_abund
 
-adjustFactor<-(sum(total_abund)/length(total_abund))/total_abund
+adjustFactor<-total_abund/(sum(total_abund)/length(total_abund))
+sum(total_abund)/length(total_abund)
+total_abund
 
 adjustFactor
 
@@ -62,7 +64,7 @@ adj.raredat<-rareData
 otu_table(adj.raredat)<-adj.raredat1
 
 ###
-### 
+###
 ### KEY!!  ######
 ###
 ###
@@ -70,7 +72,7 @@ otu_table(adj.raredat)<-adj.raredat1
 key<-cbind(colMeans(as.data.frame(as.matrix(otu_table(refcom)[1:5]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[6:10]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[11:15]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[16:20]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[21:25]))), colMeans(as.data.frame(as.matrix(otu_table(refcom)[26:30]))))
 
 ###
-### 
+###
 ### KEY!!  ######
 ###
 ###
@@ -244,7 +246,7 @@ rare2OTU<-as.matrix(t(otu_table(r2data)))
 #attach(sData)
 rare2dge<-DGEList(counts=rare2OTU)
 rare2dge<-calcNormFactors(rare2dge) #calculate the normalization factors via EdgeR (see EdgeR documentation)
-
+?calcNormFactors
 #design<-model.matrix(~categories)
 rare2V <- voom(rare2dge, design, plot=TRUE)
 rare2Fit<-lmFit(rare2V, design)
