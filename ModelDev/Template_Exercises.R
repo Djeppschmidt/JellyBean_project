@@ -79,6 +79,19 @@ key<-cbind(colMeans(as.data.frame(as.matrix(otu_table(refcom)[1:5]))), colMeans(
 
 ###
 ###
+### Add adonis!! ####
+###
+###
+
+library(vegan)
+
+rawOut<-adonis()
+RareOut<-adonis()
+adjRareOut<-adonis()
+R2Out<-adonis()
+
+###
+###
 ### Test MVABUND ####
 ###
 ###
