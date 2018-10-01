@@ -121,7 +121,6 @@ gm_mean = function(x, na.rm=TRUE){
   exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
 }
 
-ddsRaw = phyloseq_to_deseq2(rawdata, ~categories)
 
 RawgeoMeans = apply(counts(ddsRaw), 1, gm_mean)
 
