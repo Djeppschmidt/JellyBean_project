@@ -133,7 +133,7 @@ spp35<-function(a,b,c,d,e) {abun<-10*c+0*b*a*d*e
 fun<-c(spp1,spp2,spp3,spp4,spp5,spp6,spp7,spp8,spp9,spp10,spp11,spp12,spp13,spp14,spp15,spp16,spp17,spp18,spp19,spp20,spp21,spp22,spp23,spp24,spp25,spp26,spp27,spp28,spp29,spp30,spp31,spp32,spp33,spp34,spp35)
 
 #make environmental table
-set.seed(019283743)
+set.seed(0398274972)
 #conditionsF1 (eg som)
 library(reshape2)
 f1c1<-c(5,5,5,5,5,5)
@@ -171,46 +171,47 @@ F5.frame<-mapply(rnorm, f5c1,f5c2,f5c3)
 F5<-melt(F5.frame)
 
 Factors<-data.frame(F1$value,F2$value,F3$value,F4$value,F5$value)
+Sites<-c(paste0("Site", 1:30))
 rownames(Factors)<-Sites
 colnames(Factors)<-c("F1","F2","F3","F4","F5")
 head(Factors)
 #### output response table###
-out<-matrix(data=NA, nrow=nrow(Factors), ncol = length(fun))
+otu<-matrix(data=NA, nrow=nrow(Factors), ncol = length(fun))
 
 for(i in 1:length(fun)) {
   for(row in 1:nrow(Factors)){
-   out[row,i]<-do.call(fun[[i]], list(Factors[row,1],Factors[row,2],Factors[row,3],Factors[row,4],Factors[row,5]))
+   otu[row,i]<-do.call(fun[[i]], list(Factors[row,1],Factors[row,2],Factors[row,3],Factors[row,4],Factors[row,5]))
       }
 }
 
-Sites<-c("Site1","Site2","Site3","Site4","Site5","Site6","Site7","Site8","Site9","Site10","Site11","Site12","Site13","Site14","Site15","Site16","Site17","Site18","Site19","Site20","Site21","Site22","Site23","Site24","Site25","Site26","Site27","Site28","Site29","Site30")
+
 Taxa<-c("spp1","spp2","spp3","spp4","spp5","spp6","spp7","spp8","spp9","spp10","spp11","spp12","spp13","spp14","spp15","spp16","spp17","spp18","spp19","spp20","spp21","spp22","spp23","spp24","spp25","spp26","spp27","spp28","spp29","spp30","spp31","spp32","spp33","spp34","spp35")
 
-row.names(out)<-Sites
-colnames(out)<-Taxa
+row.names(otu)<-Sites
+colnames(otu)<-Taxa
 
-head(out)
+head(otu)
 
 
 ### convert negative values to 0
-out[out<0]<-0
+otu[otu<0]<-0
 #out
 ### round numbers
-out<-round(out)
-head(out)
+otu<-round(otu)
+head(otu)
 
 #save as phyloseq table
 
 library(phyloseq)
-OTU<-otu_table(out, taxa_are_rows = FALSE)
+OTU<-otu_table(otu, taxa_are_rows = FALSE)
 Sa<-sample_data(Factors)
-NormdistCommPS<-phyloseq(OTU, Sa)
-NormdistCommPS
+PopPS<-phyloseq(OTU, Sa) # define phyloseq for original population
+PopPS
 
-saveRDS(NormdistCommPS, "~/Documents/GitHub/JellyBean_Project/RefCommNormDist.rds")
+saveRDS(PopPS, "~/Documents/GitHub/JellyBean_Project/RefCommNormDist.rds")
 
 
-rrarefy2<- function (x, sample, replace) 
+rrarefy2<- function (x, sample, replace, prob) # can use sample function to model systematic bias ...
 {
   if (!identical(all.equal(x, round(x)), TRUE)) 
     stop("function is meaningful only for integers (counts)")
@@ -227,7 +228,7 @@ rrarefy2<- function (x, sample, replace)
   for (i in 1:nrow(x)) {
     if (sum(x[i, ]) <= sample[i]) 
       next
-    row <- sample(rep(nm, times = x[i, ]), sample[i], replace)
+    row <- sample(rep(nm, times = x[i, ]), sample[i], replace, prob)
     row <- table(row)
     ind <- names(row)
     x[i, ] <- 0
@@ -241,31 +242,30 @@ depth<-list(rnorm(30, 80000, 40000))
 depth<-round(depth[[1]])
 depth
 
-#subsampling; rarefying without replacement assumes that the community is completely sampled 
-#(there is insufficient primer and polymerase to amplify all genes) during the library prep steps
-#subsampling; rarefying with replacement assumes that the community is not completely sampled during the library prep step
+#for modeling sequencing we will be sampling with replacement because this approximates pcr allowing the machine to sequence each individual more than once; rarefying without replacement assumes that the community is completely sampled and the machine does not double count (technically not true)
 
-rareplaced<-rrarefy2(out, depth, replace=TRUE)
-head(rareplaced)
 
-rarefied<-rrarefy2(out, depth, replace=FALSE)
-head(rarefied)
+seq1.replace<-rrarefy2(otu, depth, replace=TRUE) # model sequencing process
+head(seq1.replace)
+
+#seq1.noreplace<-rrarefy2(out, depth, replace=FALSE) # model sequencing process
+#head(seq1.noreplace)
 
 sum(as.data.frame(t(rarefied))$Site1)
 sum(as.data.frame(t(rareplaced))$Site1)
 
 
-rarefied<-otu_table(rarefied, taxa_are_rows = FALSE)
-rare.NormdistCommPS<-phyloseq(rarefied, Sa)
-rare.NormdistCommPS
+seq1.replace<-otu_table(seq1.replace, taxa_are_rows = FALSE)
+seq1.replacePS<-phyloseq(seq1.replace, Sa)
+seq1.replacePS
 
-rareplaced<-otu_table(rareplaced, taxa_are_rows = FALSE)
-replaced.NormdistCommPS<-phyloseq(rareplaced, Sa)
-replaced.NormdistCommPS
+#rareplaced<-otu_table(rareplaced, taxa_are_rows = FALSE)
+#replaced.NormdistCommPS<-phyloseq(rareplaced, Sa)
+#replaced.NormdistCommPS
 
-total_abund<-sample_sums(NormdistCommPS)
-sample_data(replaced.NormdistCommPS)$total_abund<-total_abund
-sample_data(rare.NormdistCommPS)$total_abund<-total_abund
+total_abund<-sample_sums(PopPS)
+sample_data(seq1.replacePS)$total_abund<-total_abund
+
 
 
 saveRDS(rare.NormdistCommPS, "~/Documents/GitHub/JellyBean_Project/rarefied_com.rds")
